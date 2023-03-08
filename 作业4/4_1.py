@@ -42,11 +42,13 @@ def main():
     x_0 = 5.0
     x_n = 95.0
     n_list = [2, 4, 6]
+    n = 2
+    max_error = 0.0005
     line_y = []
     for x in np.arange(x_0, x_n, 0.001).tolist():
         y = f(x)
         line_y.append(y)
-    for n in n_list:
+    while True:
         step = (x_n-x_0)/n
         x = np.arange(x_0, x_n + step, step).tolist()
         y = []
@@ -55,19 +57,29 @@ def main():
             y.append(y_i)
         Lag_y = LagInter(x, y)
         line_x = np.arange(min(x), max(x), 0.001).tolist()
-        plt.subplot(1, 2, 1)
-        plt.plot(line_x, Lag_y, label="n = " + str(n))
-        plt.subplot(1, 2, 2)
         error = []
         for k in range(len(Lag_y)):
             error.append(np.abs(Lag_y[k]-line_y[k]))
-        plt.plot(line_x, error, label="n = " + str(n))
+        if n in n_list:
+            plt.subplot(1, 2, 1)
+            plt.plot(line_x, Lag_y, label="n = " + str(n))
+            plt.subplot(1, 2, 2)
+            plt.plot(line_x, error, label="n = " + str(n))
+        if max(error) <= max_error:
+            print('最大误差为 %f  要求n至少为 %d' %(max_error, n))
+            break
+        n += 1
     plt.subplot(1, 2, 1)
     plt.plot(line_x, line_y, label="f(x)")
     plt.legend()
     plt.xlabel("x")
     plt.ylabel("y")
+    plt.subplot(1, 2, 2)
+    plt.xlabel("x")
+    plt.ylabel("error")
     plt.suptitle("Lagrangian Interpolation Polynomials When n=2,4,6")
+    # 设置子图间距
+    plt.subplots_adjust(wspace = 0.35)
     plt.savefig('./作业4/Result_a.jpg')
     plt.close()
     return 0
